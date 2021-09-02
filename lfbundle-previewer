@@ -1,0 +1,56 @@
+#!/usr/bin/env sh
+
+preview() {
+	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
+	{
+	"action": "add", "identifier": "lfbundle-preview",
+	"path": "$1", "x": $4, "y": $5, "width": $2, "height": $3,
+	"scaler": "contain"
+	}
+	EOF
+}
+
+file="$1"; shift
+page="$(cat $LFBUNDLE_TEMPDIR/page)"
+case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
+*.tar*) tar tf "$file" ;;
+*.zip) unzip -l "$file" ;;
+*.rar) unrar l "$file" ;;
+*.7z) 7z l "$file" ;;
+*.avi|*.mp4|*.mkv)
+	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+	ffmpeg -y -i "$file" -vframes 1 "$thumbnail"
+	preview "$thumbnail" "$@"
+	;;
+*.pdf|*.ps)
+	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+	gs -o "$thumbnail" -sDEVICE=pngalpha -dFirstPage=$page -dLastPage=$page "$file" >/dev/null
+	preview "$thumbnail" "$@"
+	;;
+*.ott|*.doc|*.docx)
+	echo TODO
+	;;
+*.djvu)
+	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+	buffer="$LFBUNDLE_TEMPDIR/buffer.tiff"
+	ddjvu -page=$page -format=tiff "$file" "$buffer"
+	gm convert "$buffer" "$thumbnail"
+	preview "$thumbnail" "$@"
+	;;
+*.jpg|*.jpeg|*.png|*.bmp|*.tiff)
+	preview "$file" "$@" ;;
+*.svg)
+	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+	gm convert "$file" "$thumbnail"
+	preview "$thumbnail" "$@"
+	;;
+*.gif)
+	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+	gm convert "$file[$page]" "$thumbnail"
+	preview "$thumbnail" "$@"
+	;;
+*) bat -f "$file" | awk "NR > $page-1"
+	return 0
+	;;
+esac
+return 127 # nonzero retcode required for lf previews to reload

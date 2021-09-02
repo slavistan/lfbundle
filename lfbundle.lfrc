@@ -1,0 +1,79 @@
+# lfrc to be used in conjunction with the scaffolding setup. This configuration
+# is incompatible with vanilla lf and requires a specific environement.
+
+set hidden
+set ratios 1:3
+set nodrawbox
+set scrolloff 3
+set icons
+set truncatechar '⋯'
+set timefmt '_2. Dec 2006 15:04'
+set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[1;4m%f\033[0m"
+set previewer /usr/local/lib/lfbundle-previewer
+set cleaner /usr/local/lib/lfbundle-cleaner
+
+# TODO: Enable/disable preview (set nopreview; set ratios 1) for narrow windows
+map o open_default
+map <space> toggle
+map <esc> quit
+map j down
+map k up
+map q quitcd
+map l downdir
+map <gt> incr_page
+map <lt> decr_page
+
+# TODO: Opening files
+#       Open in place (swallow/vim)
+#       open in new window
+#       open workspace
+#
+# Default opener for every filetype.
+# NOTE: lf spawns subprocesses within its own process group. This causes
+#       subprocesses to share signals, even if they are detached (&foo &).
+#       To avoid this problem, we explicitly wrap the call with setsid.
+cmd open_default &{{
+	setsid --fork /usr/local/lib/lfbundle-opener "$f"
+}}
+
+# Quit lf and change zsh's working directory.
+cmd quitcd &{{
+	echo "1" > "$LFBUNDLE_TEMPDIR/changecwd"
+	lf -remote "send $id quit"
+}}
+
+# Navigate into directory, but don't open if file. Complement to the built-in
+# updir.
+cmd downdir &{{
+	[ -d "$f" ] && lf -remote "send $id open"
+}}
+
+# Pagination
+# FIXME: Pagination does not reset page number which causes
+#        previews to break if an out-of-bounds index is applied
+#        to a document preview. There's no proper mechanism to
+#        reset the page number currently.
+#        Maybe ask why lf redraws the screen after every remote
+#        command execution. This is really annoying.
+cmd incr_page &{{
+	page="$(cat $LFBUNDLE_TEMPDIR/page)"
+	echo $(( $page + 1 )) >"$LFBUNDLE_TEMPDIR/page"
+	lf -remote "send $id reload"
+}}
+
+cmd decr_page &{{
+	page="$(cat $LFBUNDLE_TEMPDIR/page)"
+	if [ $page -gt 1 ]; then
+		echo $(( $page - 1 )) >"$LFBUNDLE_TEMPDIR/page"
+		lf -remote "send $id reload"
+	fi
+}}
+
+# IDEA: Use default lfrc for setup compatible with vanilla lf.
+#       Some aspects of my lf configuration are compatible with any lf setup
+#       and might be reused for systems where the complex fluff is unavailable.
+
+# IDEA: Increase pagination for text files only if document is longer than
+#       display height.
+
+# TODO: Increase pagination by half terminal height (vim's ^d behavior)

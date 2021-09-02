@@ -1,0 +1,38 @@
+#!/usr/bin/env zsh
+
+file="$1"; shift
+case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
+#*.tar*) tar tf "$file" ;;
+#*.zip) unzip -l "$file" ;;
+#*.rar) unrar l "$file" ;;
+#*.7z) 7z l "$file" ;;
+*.avi|*.mp4|*.mkv)
+	mpv "$file"
+	exit
+	;;
+*.pdf|*.ps|*.djvu)
+	zathura "$file"
+	exit
+	;;
+*.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
+	soffice "$file"
+	exit
+	;;
+*.jpg|*.jpeg|*.png|*.bmp)
+	sxiv "$file"
+	exit
+	;;
+*.svg)
+	inkscape "$file"
+	exit
+	;;
+*.gif)
+	sxiv -a "$file"
+	exit
+	;;
+esac
+
+#case "$(	
+
+lf -remote "send $id :echoerr \"No binding for file type. Can't open.\""
+remote 1
