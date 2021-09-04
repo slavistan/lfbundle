@@ -1,6 +1,7 @@
 # lfrc to be used in conjunction with the scaffolding setup. This configuration
 # is incompatible with vanilla lf and requires a specific environement.
 
+
 set hidden
 set ratios 2:5
 set nodrawbox
@@ -9,7 +10,6 @@ set icons
 set truncatechar '⋯'
 set timefmt '_2. Dec 2006 15:04'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
-set previewer /usr/local/lib/lfbundle-previewer
 set cleaner /usr/local/lib/lfbundle-cleaner
 
 map d
@@ -94,6 +94,17 @@ cmd togglecol %{{
 	fi
 }}
 
+
+%{{
+	w=$(tput cols)
+	if [ $w -le 92 ]; then
+		lf -remote "send $id onecol"
+	else
+		lf -remote "send $id twocol"
+	fi
+	
+}}
+
 # IDEA: Use default lfrc for setup compatible with vanilla lf.
 #       Some aspects of my lf configuration are compatible with any lf setup
 #       and might be reused for systems where the complex fluff is unavailable.
@@ -104,8 +115,6 @@ cmd togglecol %{{
 # IDEA: Disable pagination for short documents.
 # IDEA: Videos and gifs should automaticall show different images (youtube preview)
 # IDEA: Increase pagination by half terminal height (vim's ^d behavior)
-
-# TODO: Enable/disable preview (set nopreview; set ratios 1) for narrow windows
 
 # TODO: File opening mechanisms
 #       - default external opener for every type
