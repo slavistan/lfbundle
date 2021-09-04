@@ -1,8 +1,3 @@
 #!/usr/bin/env sh
 
-cat <<EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
-{
-"action": "remove",
-"identifier": "lfbundle-preview"
-}
-EOF
+echo '{ "action": "remove", "identifier": "lfbundle-preview" }' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"

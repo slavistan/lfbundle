@@ -6,7 +6,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 #*.zip) unzip -l "$file" ;;
 #*.rar) unrar l "$file" ;;
 #*.7z) 7z l "$file" ;;
-*.avi|*.mp4|*.mkv)
+*.avi|*.mp4|*.mkv|*.webm)
 	mpv "$file"
 	exit
 	;;
@@ -15,10 +15,11 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	exit
 	;;
 *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
-	soffice "$file"
+	# FIXME: soffice crashes when launched via shell-async '&soffice'
+	soffice "$file" >/tmp/barz 2>&1
 	exit
 	;;
-*.jpg|*.jpeg|*.png|*.bmp)
+*.jpg|*.jpeg|*.png|*.bmp|*.tiff)
 	sxiv "$file"
 	exit
 	;;
@@ -30,9 +31,8 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	sxiv -a "$file"
 	exit
 	;;
+*)
+	echo "nvim $file" | zsh-xi st
+	exit
+	;;
 esac
-
-#case "$(	
-
-lf -remote "send $id :echoerr \"No binding for file type. Can't open.\""
-remote 1

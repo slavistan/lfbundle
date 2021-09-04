@@ -4,53 +4,56 @@ preview() {
 	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	{
 	"action": "add", "identifier": "lfbundle-preview",
-	"path": "$1", "x": $4, "y": $5, "width": $2, "height": $3,
+	"path": "$1", "x": $(($4 + 2)), "y": $(($5 + 1)), "width": $(($2 - 1)), "height": $(($3 - 1)),
 	"scaler": "contain"
 	}
 	EOF
 }
 
-file="$1"; shift
+fullpath="$1"; shift
 page="$(cat $LFBUNDLE_TEMPDIR/page)"
-case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
-*.tar*) tar tf "$file" ;;
-*.zip) unzip -l "$file" ;;
-*.rar) unrar l "$file" ;;
-*.7z) 7z l "$file" ;;
-*.avi|*.mp4|*.mkv)
-	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
-	ffmpeg -y -i "$file" -vframes 1 "$thumbnail"
+thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
+filename="$(basename "$fullpath")"
+
+echo "\033[1;38;5;253m$filename\033[0m"
+case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
+*.tar*) tar tf "$fullpath" ;;
+*.zip) unzip -l "$fullpath" ;;
+*.rar) unrar l "$fullpath" ;;
+*.7z) 7z l "$fullpath" ;;
+*.avi|*.mp4|*.mkv|*.webm)
+	ffmpeg -y -i "$fullpath" -vframes 1 "$thumbnail"
 	preview "$thumbnail" "$@"
 	;;
 *.pdf|*.ps)
-	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
-	gs -o "$thumbnail" -sDEVICE=pngalpha -dFirstPage=$page -dLastPage=$page "$file" >/dev/null
+	gs -o "$thumbnail" -sDEVICE=pngalpha -dFirstPage=$page -dLastPage=$page "$fullpath" >/dev/null
 	preview "$thumbnail" "$@"
 	;;
-*.ott|*.doc|*.docx)
-	echo TODO
+*.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
+	echo
+	soffice --cat "$fullpath"
 	;;
 *.djvu)
-	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
 	buffer="$LFBUNDLE_TEMPDIR/buffer.tiff"
-	ddjvu -page=$page -format=tiff "$file" "$buffer"
+	ddjvu -page=$page -format=tiff "$fullpath" "$buffer"
 	gm convert "$buffer" "$thumbnail"
 	preview "$thumbnail" "$@"
 	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff)
-	preview "$file" "$@" ;;
+	preview "$fullpath" "$@" ;;
 *.svg)
-	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
-	gm convert "$file" "$thumbnail"
+	gm convert "$fullpath" "$thumbnail"
 	preview "$thumbnail" "$@"
 	;;
 *.gif)
-	thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
-	gm convert "$file[$page]" "$thumbnail"
+	gm convert "$fullpath[$page]" "$thumbnail"
 	preview "$thumbnail" "$@"
 	;;
-*) bat -f "$file" | awk "NR > $page-1"
-	return 0
+*.iso)
+	echo
+	iso-info --no-header "$fullpath" | tail -n +2
+	;;
+*) bat -P -f -r "$page:" --style "grid,numbers" "$fullpath"
 	;;
 esac
-return 127 # nonzero retcode required for lf previews to reload
+return 127 # nonzero retcode disable preview caching.

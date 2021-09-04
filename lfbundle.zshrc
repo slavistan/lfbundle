@@ -200,6 +200,9 @@ so=38;5;253:\
 	# ???: Which is the proper signal to trap such that it cached a killed terminal?
 	trap 'lfbundle_cleanup &!' EXIT
 
+	# State
+	touch "$LFBUNDLE_TEMPDIR/togglecol"
+
 	# ueberzug
 	mkfifo "$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	tail -f "$LFBUNDLE_TEMPDIR/ueberzug_fifo" | ueberzug layer --silent &!
