@@ -53,7 +53,7 @@ case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 	echo
 	iso-info --no-header "$fullpath" | tail -n +2
 	;;
-*) bat -P -f -r "$page:" --style "grid,numbers" "$fullpath"
+*) bat -P -f --terminal-width $W -r "$page:" --style "grid,numbers" "$fullpath"
 	;;
 esac
 return 127 # nonzero retcode disable preview caching.
