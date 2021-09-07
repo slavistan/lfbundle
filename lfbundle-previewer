@@ -1,10 +1,16 @@
 #!/usr/bin/env sh
 
+# Coordinates
+X=$(($4 + 2))
+Y=$(($5 + 1))
+W=$(($2 - 1))
+H=$(($3 - 1))
+
 preview() {
 	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	{
 	"action": "add", "identifier": "lfbundle-preview",
-	"path": "$1", "x": $(($4 + 2)), "y": $(($5 + 1)), "width": $(($2 - 1)), "height": $(($3 - 1)),
+	"path": "$1", "x": $X, "y": $Y, "width": $W, "height": $H,
 	"scaler": "contain"
 	}
 	EOF
