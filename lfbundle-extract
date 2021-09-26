@@ -1,0 +1,13 @@
+#!/usr/bin/env sh
+
+fullpath="$1"; shift
+dir="$(dirname "$fullpath")"
+filename="$(basename "$fullpath")"
+
+case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
+*.tar*) tar tf "$fullpath" ;;
+*.zip) unzip -l "$fullpath" ;;
+*.rar) unrar l "$fullpath" ;;
+*.7z) 7z e -o"$dir/$(basename "$filename" .7z)" "$fullpath" ;;
+*) lf -remote "send $id echoerr 'File is not an archive. Abort.'"; exit 1 ;;
+esac

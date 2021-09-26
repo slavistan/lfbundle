@@ -1,33 +1,69 @@
 #!/usr/bin/env sh
 
-preview() {
+# ueberzug previews
+preview_image() {
 	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	{
 	"action": "add", "identifier": "lfbundle-preview",
-	"path": "$1", "x": $(($4 + 2)), "y": $(($5 + 1)), "width": $(($2 - 1)), "height": $(($3 - 1)),
+	"path": "$1", "x": $4, "y": $5, "width": $2, "height": $3,
 	"scaler": "contain"
 	}
 	EOF
 }
 
-fullpath="$1"; shift
-page="$(cat $LFBUNDLE_TEMPDIR/page)"
-thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png"
-filename="$(basename "$fullpath")"
+# common text preview wrapper, so that pagination works everywhere. Uses a
+# switch to remove fancy coloring on demand.
+preview_text() {
+	if [ "$1" = "-v" ]; then
+		shift
+		bat -P -f -r "$page:" --style plain "$@"
+	else
+		bat -P -f -r "$page:" --style "grid,numbers" "$@"
+	fi
+}
 
-echo "\033[1;38;5;253m$filename\033[0m"
+thumbnail="$LFBUNDLE_TEMPDIR/thumbnail.png" # thumbnail path for ad-hoc conversions
+page="$(cat "$LFBUNDLE_TEMPDIR/page")" # pagination offset
+
+fullpath="$1"
+x_in="$4"; y_in="$5"; w_in="$2"; h_in="$3"
+
+# Stdout is displayed in the preview box with an offset of two characters to
+# the right. In order to align image previews we add that offset to the
+# preview coordinates.
+# TODO: Report that bug. Also, set drawbox reports a width which is an additional
+#       box too small.
+x_out=$((x_in+2)); w_out=$((w_in-2))
+
+# Determine the number of lines required for the full filename to be displayed
+# and add that to the y-offset for image previews. Add another offset for the
+# horizontal separator line.
+filename="$(basename "$fullpath")"
+filename_wrapped="$(echo "$filename" | fold -w "$w_out")"
+lines="$(echo "$filename_wrapped" | wc -l)"
+y_out=$((y_in+lines+1)); h_out=$((h_in-y_in-1))
+
+# Print the filename and a separator line. The length of the separator line matches the
+# length of the file name.
+echo "\033[1;38;5;253m$filename_wrapped\033[0m"
+w_sepline=$w_out
+if [ "$lines" -eq 1 ]; then
+	w_sepline="$(echo "$filename_wrapped" | tail -1 | tr -d '\n' | wc -m)"
+fi
+printf '─%.0s' $(seq 1 $w_sepline); echo
+
 case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 *.tar*) tar tf "$fullpath" ;;
 *.zip) unzip -l "$fullpath" ;;
 *.rar) unrar l "$fullpath" ;;
-*.7z) 7z l "$fullpath" ;;
+*.7z) 7z l "$fullpath" | sed -n -e '/^----------/,$p' | tail +2 | head -n-2 | rev | cut -d' ' -f1 | rev | preview_text -v - ;;
 *.avi|*.mp4|*.mkv|*.webm)
 	ffmpeg -y -i "$fullpath" -vframes 1 "$thumbnail"
-	preview "$thumbnail" "$@"
+	preview_image "$thumbnail" "$@"
 	;;
 *.pdf|*.ps)
-	gs -o "$thumbnail" -sDEVICE=pngalpha -dFirstPage=$page -dLastPage=$page "$fullpath" >/dev/null
-	preview "$thumbnail" "$@"
+	gs -o "$thumbnail" -sDEVICE=pngalpha -dFirstPage="$page" -dLastPage="$page" "$fullpath" >/dev/null
+	preview_image "$thumbnail" "$@"
 	;;
 *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
 	echo
@@ -35,25 +71,26 @@ case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 	;;
 *.djvu)
 	buffer="$LFBUNDLE_TEMPDIR/buffer.tiff"
-	ddjvu -page=$page -format=tiff "$fullpath" "$buffer"
+	ddjvu -page="$page" -format=tiff "$fullpath" "$buffer"
 	gm convert "$buffer" "$thumbnail"
-	preview "$thumbnail" "$@"
+	preview_image "$thumbnail" "$@"
 	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff)
-	preview "$fullpath" "$@" ;;
+	preview_image "$fullpath" "$w_out" "$h_out" "$x_out" "$y_out"
+	;;
 *.svg)
 	gm convert "$fullpath" "$thumbnail"
-	preview "$thumbnail" "$@"
+	preview_image "$thumbnail" "$@"
 	;;
 *.gif)
 	gm convert "$fullpath[$page]" "$thumbnail"
-	preview "$thumbnail" "$@"
+	preview_image "$thumbnail" "$@"
 	;;
 *.iso)
 	echo
 	iso-info --no-header "$fullpath" | tail -n +2
 	;;
-*) bat -P -f -r "$page:" --style "grid,numbers" "$fullpath"
+*) preview_text "$fullpath"
 	;;
 esac
 return 127 # nonzero retcode disable preview caching.

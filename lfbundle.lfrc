@@ -74,7 +74,7 @@ cmd onecol %{{
 	# HACK: Must no-op previewer or the ueberzug spawns again.
 	#       lf seems to have a bug with spurious executions of the previewer.
 	#       Running a simple :reload will run the previewer twice. Check
-	#       if thats my blunder. TODO; C
+	#       if thats my blunder. TODO;
 	lf -remote "send $id :set previewer true"
 	lf -remote "send $id :set nopreview; set ratios 1; clean_preview; reload"
 	rm "$LFBUNDLE_TEMPDIR/togglecol"
@@ -103,6 +103,10 @@ cmd togglecol %{{
 		lf -remote "send $id twocol"
 	fi
 	
+}}
+
+cmd extract %{{
+	/usr/local/lib/lfbundle-extract "$f"
 }}
 
 # IDEA: Use default lfrc for setup compatible with vanilla lf.
