@@ -1,13 +1,30 @@
 #!/usr/bin/env sh
 
-fullpath="$1"; shift
-dir="$(dirname "$fullpath")"
-filename="$(basename "$fullpath")"
+fullpath="$1"
+filedir="$(dirname -- "$fullpath")"
+filename="$(basename -- "$fullpath")"
 
+outdir="${fullpath}_extracted"
+if [ -d "$outdir" ]; then
+	lf -remote "send $id echoerr \"Output directory exists: '$(dirname "$outdir")'. Abort.\""
+	exit 1
+fi
+
+# TODO: Some files don't deal with filenames with leading hyphens (unzip)
 case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
-*.tar*) tar tf "$fullpath" ;;
-*.zip) unzip -l "$fullpath" ;;
-*.rar) unrar l "$fullpath" ;;
-*.7z) 7z e -o"$dir/$(basename "$filename" .7z)" "$fullpath" ;;
-*) lf -remote "send $id echoerr 'File is not an archive. Abort.'"; exit 1 ;;
+*.rar)
+	mkdir "$outdir"
+	cd "$outdir"
+	unrar x "$fullpath"
+	;;
+*.7z)
+	7z e -o"$outdir" -- "$fullpath"
+	;;
+*.zip) unzip -d "$outdir" -- "$fullpath"
+	;;
+*) lf -remote "send $id echoerr 'File is not an archive. Abort.'"
+	# TODO: lf reloads on shell-... and the error message is not displayed.
+	exit 1
+	;;
+#*.tar.gz) tar -C "$outdir" "$fullpath" ;;
 esac

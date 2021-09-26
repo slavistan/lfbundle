@@ -11,6 +11,7 @@ set truncatechar '⋯'
 set timefmt '_2. Dec 2006 15:04'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
+set filesep '\0' # use nul-separation for multiple selections
 
 map d
 map o open_default
@@ -105,8 +106,9 @@ cmd togglecol %{{
 	
 }}
 
-cmd extract %{{
-	/usr/local/lib/lfbundle-extract "$f"
+cmd extract &{{
+	printf -- '%s' "$fx" | xargs -0 -n 1 -P 1 /usr/local/lib/lfbundle-extract
+	lf -remote "send $id reload"
 }}
 
 # IDEA: Use default lfrc for setup compatible with vanilla lf.
