@@ -1,6 +1,5 @@
 # lfrc to be used in conjunction with the scaffolding setup. This configuration
-# is incompatible with vanilla lf and requires a specific environement.
-
+# is incompatible with vanilla lf and requires a specific environment.
 
 set hidden
 set ratios 2:5
@@ -12,14 +11,15 @@ set timefmt '_2. Dec 2006 15:04'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
 set filesep '\0' # use nul-separation for multiple selections
+set period 1 # check directory timestamps every second
 
-map d
+map d # unmap scary delete hotkey
 map o open_default
 map <space> toggle
 map <esc> quit
+map q quitcd # quit with
 map j down
 map k up
-map q quitcd
 map l downdir
 map <gt> incr_page
 map <lt> decr_page
@@ -124,11 +124,12 @@ cmd extract &{{
 
 # TODO: File opening mechanisms
 #       - default external opener for every type
-#			-- same with swallow?
-#			-- default opener for multiple selected files (tabs nvim?)
+#         -- same with swallow?
+#         -- default opener for multiple selected files (tabs nvim?)
 #       - default editor for selected file types
 
 # TODO: Directory actions
 #       dmenu-esque context aware choice of actions to perform within a directory.
 #       - open new termial with wd
 
+# FIXME: Color of /tmp directory is blue
