@@ -1,6 +1,5 @@
 # lfrc to be used in conjunction with the scaffolding setup. This configuration
-# is incompatible with vanilla lf and requires a specific environement.
-
+# is incompatible with vanilla lf and requires a specific environment.
 
 set hidden
 set ratios 2:5
@@ -11,15 +10,17 @@ set truncatechar '⋯'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
 set timefmt " 2006-01-02  15:04:05.000000000-0700"
+set filesep '\0' # use nul-separation for multiple selections
+set period 1 # check directory timestamps every second
 
-map d
+map d # unmap scary delete hotkey
 map i
 map o open_default
 map <space> toggle
 map <esc> quit
+map q quitcd # quit with
 map j down
 map k up
-map q quitcd
 map l downdir
 map <gt> incr_page
 map <lt> decr_page
@@ -75,7 +76,7 @@ cmd onecol %{{
 	# HACK: Must no-op previewer or the ueberzug spawns again.
 	#       lf seems to have a bug with spurious executions of the previewer.
 	#       Running a simple :reload will run the previewer twice. Check
-	#       if thats my blunder. TODO; C
+	#       if thats my blunder. TODO;
 	lf -remote "send $id :set previewer true"
 	lf -remote "send $id :set nopreview; set ratios 1; clean_preview; reload"
 	rm "$LFBUNDLE_TEMPDIR/togglecol"
@@ -106,6 +107,11 @@ cmd togglecol %{{
 	
 }}
 
+cmd extract &{{
+	printf -- '%s' "$fx" | xargs -0 -n 1 -P 1 /usr/local/lib/lfbundle-extract
+	lf -remote "send $id reload"
+}}
+
 # IDEA: Use default lfrc for setup compatible with vanilla lf.
 #       Some aspects of my lf configuration are compatible with any lf setup
 #       and might be reused for systems where the complex fluff is unavailable.
@@ -119,11 +125,12 @@ cmd togglecol %{{
 
 # TODO: File opening mechanisms
 #       - default external opener for every type
-#			-- same with swallow?
-#			-- default opener for multiple selected files (tabs nvim?)
+#         -- same with swallow?
+#         -- default opener for multiple selected files (tabs nvim?)
 #       - default editor for selected file types
 
 # TODO: Directory actions
 #       dmenu-esque context aware choice of actions to perform within a directory.
 #       - open new termial with wd
 
+# FIXME: Color of /tmp directory is blue
