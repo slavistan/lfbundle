@@ -44,3 +44,5 @@ This will create the following files:
 
 To **uninstall** simply remove the above files and delete the line added to your zshrc.
 
+<!-- TODO: previewer for .drawio -->
+<!-- TODO: opener for .drawio -->
