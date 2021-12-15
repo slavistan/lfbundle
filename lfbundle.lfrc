@@ -8,11 +8,12 @@ set nodrawbox
 set scrolloff 3
 set icons
 set truncatechar '⋯'
-set timefmt '_2. Dec 2006 15:04'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
+set timefmt " 2006-01-02  15:04:05.000000000-0700"
 
 map d
+map i
 map o open_default
 map <space> toggle
 map <esc> quit
