@@ -1,6 +1,6 @@
 #!/usr/bin/env sh
 
-# Coordinates
+# Coordinates of preview area, adjusted for filename and separation line.
 X=$(($4 + 2))
 Y=$(($5 + 1))
 W=$(($2 - 1))
@@ -51,7 +51,7 @@ y_out=$((y_in+lines+1)); h_out=$((h_in-y_in-1))
 
 # Print the filename and a separator line. The length of the separator line matches the
 # length of the file name.
-echo "\033[1;38;5;253m$filename_wrapped\033[0m"
+printf "\033[1;38;5;253m$filename_wrapped\033[0m\n"
 w_sepline=$w_out
 if [ "$lines" -eq 1 ]; then
 	w_sepline="$(echo "$filename_wrapped" | tail -1 | tr -d '\n' | wc -m)"

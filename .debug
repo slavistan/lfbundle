@@ -1,0 +1,32 @@
+#!/usr/bin/env zsh
+
+list_tempdirs() {
+	ls /run/user/1000/lfbundle
+}
+
+list_lf_client_processes() {
+	pgrep -a lf | grep -v "lf -server" | cut -d" " -f1
+}
+
+list_ueberzug_processes() {
+	pgrep -a ueberzug | cut -d" " -f1
+}
+
+list() {
+	tempdirs=(${(@f)"$(list_tempdirs)"})
+	lfprocs=(${(@f)"$(list_lf_client_processes)"})
+	ueberzugprocs=(${(@f)"$(list_ueberzug_processes)"})
+
+	echo "\033[32;1m$#tempdirs directories\033[0m"
+	echo "  $tempdirs"
+	echo "\033[32;1m$#lfprocs lf processes\033[0m"
+	echo "  $lfprocs"
+	echo "\033[32;1m$#ueberzugprocs ueberzug processes\033[0m"
+	echo "  $ueberzugprocs"
+
+}
+
+case "$1" in
+list) list ;;
+watch) watch -c -t -n 0.1 "$ZSH_ARGZERO" list ;;
+esac
