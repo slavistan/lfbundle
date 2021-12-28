@@ -10,7 +10,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	mpv "$file"
 	exit
 	;;
-*.pdf|*.ps|*.djvu)
+*.pdf|*.ps|*.djvu|*.epub)
 	zathura "$file"
 	exit
 	;;

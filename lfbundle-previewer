@@ -5,7 +5,6 @@ preview_image() {
 	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	{
 	"action": "add", "identifier": "lfbundle-preview",
-	"scaling_position_x": 1.0, "scaling_position_y": 1.0,
 	"path": "$1", "x": "$IMAGE_PREVIEWBOX_X", "y": "$IMAGE_PREVIEWBOX_Y", "width": "$IMAGE_PREVIEWBOX_W", "height": "$IMAGE_PREVIEWBOX_H",
 	"scaler": "contain"
 	}
