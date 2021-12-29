@@ -10,8 +10,9 @@ set truncatechar '⋯'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
 set timefmt " 2006-01-02  15:04:05.000000000-0700"
-set filesep '\0' # use nul-separation for multiple selections
 set period 1 # check directory timestamps every second
+set shell zsh
+set filesep '\0' # use nul-separation for multiple selections
 
 map d # unmap scary delete hotkey
 map i
@@ -25,6 +26,11 @@ map l downdir
 map <gt> incr_page
 map <lt> decr_page
 map t togglecol
+
+cmd chmod ${{
+	chmod "$@" "${(s/\0/)fx}" &&
+		lf -remote "send $id :reload"
+}}
 
 # Default opener for every filetype.
 # NOTE: lf spawns subprocesses within its own process group. This causes

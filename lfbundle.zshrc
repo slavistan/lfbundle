@@ -1,20 +1,9 @@
 # This file shall be sourced by zsh and provides the enviroment and setup
 # required to extend lf's functionality.
 
-# Cleanup
-lfbundle_cleanup() {
-	kill "$LFBUNDLE_UEBERZUGID"
-	pkill -f "tail -f $LFBUNDLE_TEMPDIR/ueberzug_fifo" # kill tail zombie
-	rm -rf "$LFBUNDLE_TEMPDIR" 2>&1
-	unset LFBUNDLE_TEMPDIR
-	unset LF_COLORS
-	unset LF_ICONS
-	unset LFBUNDLE_UEBERZUGID
-}
-
 lfbundle() {
 
-	LF_ICONS="\
+	local LF_ICONS="\
 tw=:\
 st=:\
 ow=:\
@@ -177,7 +166,7 @@ ex=:\
 *.nix=:\
 "
 
-	LF_COLORS="\
+	local LF_COLORS="\
 ex=38;5;253:\
 fi=38;5;253:\
 di=1;38;5;253:\
@@ -185,37 +174,45 @@ ln=38;5;253:\
 so=38;5;253:\
 "
 
-	# environment
-	basedir="$XDG_RUNTIME_DIR/lfbundle"
+
+	# Initialize tempdir.
+	local basedir="$XDG_RUNTIME_DIR/lfbundle"
 	mkdir -p "$basedir"
-	export LFBUNDLE_TEMPDIR="$(mktemp -d -p "$basedir" lf-XXXXXX)"
-	export LF_ICONS
-	export LF_COLORS
+	LFBUNDLE_TEMPDIR="$(mktemp -d -p "$basedir" lf-XXXXXX)"
 
-	# Ensure cleanup is executed without modifying the shell
-	setopt localoptions
-	setopt localtraps
-	# ???: Why is the EXIT signal elicited when I kill the terminal?
-	# ???: Any why is the EXIT signal handler apparently cut off after a few 100ms?
-	# ???: Which is the proper signal to trap such that it cached a killed terminal?
-	trap 'lfbundle_cleanup &!' EXIT
-
-	# State
-	touch "$LFBUNDLE_TEMPDIR/togglecol"
-
-	# ueberzug
+	# Start ueberzug.
 	mkfifo "$LFBUNDLE_TEMPDIR/ueberzug_fifo"
 	tail -f "$LFBUNDLE_TEMPDIR/ueberzug_fifo" | ueberzug layer --silent &!
-	export LFBUNDLE_UEBERZUGID=$!
+	LFBUNDLE_UEBERZUGID=$!
 
-	# Pagination
+	# Arm cleanup trap.
+	lfbundle_cleanup() {
+		kill "$LFBUNDLE_UEBERZUGID"
+		pkill -f "tail -f $LFBUNDLE_TEMPDIR/ueberzug_fifo" # kill tail zombie
+		rm -rf "$LFBUNDLE_TEMPDIR"
+		unset LFBUNDLE_UEBERZUGID
+		unset LFBUNDLE_TEMPDIR
+		unfunction lfbundle_cleanup
+	}
+	setopt localoptions
+	setopt localtraps
+	trap 'lfbundle_cleanup' HUP INT TERM QUIT
+
+	# Initialize state of pagination and single/multi columns mode.
+	touch "$LFBUNDLE_TEMPDIR/togglecol"
 	echo 1 >"$LFBUNDLE_TEMPDIR/page"
 
-	# execute lf
-	\lf -last-dir-path "$LFBUNDLE_TEMPDIR/lastdir" -config "$XDG_CONFIG_HOME/lfbundle/lfbundle.lfrc" "$@"
-	/usr/local/lib/lfbundle-cleaner
+	# Run lf.
+	LF_ICONS="$LF_ICONS" LF_COLORS="$LF_COLORS" LFBUNDLE_TEMPDIR="$LFBUNDLE_TEMPDIR" \lf \
+		-last-dir-path "$LFBUNDLE_TEMPDIR/lastdir" \
+		-config "$XDG_CONFIG_HOME/lfbundle/lfbundle.lfrc" \
+		"$@"
 
-	# postprocess
-	[ -e "$LFBUNDLE_TEMPDIR/changecwd" ] && cd "$(cat "$LFBUNDLE_TEMPDIR/lastdir")" 2>/dev/null
+	# Change working directory after closing lf.
+	[[ -f "$LFBUNDLE_TEMPDIR/changecwd" ]] && cd "$(cat "$LFBUNDLE_TEMPDIR/lastdir")" 2>/dev/null
+
+	lfbundle_cleanup
 }
 alias lf=lfbundle
+
+# FIXME: Cleanup is not performed when the terminal is killed.
