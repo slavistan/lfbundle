@@ -12,7 +12,7 @@ preview_image() {
 }
 
 # Preview "$1"'s file content as text using '-' for stdin. Use as common text
-# preview wrapper, so that vagination will apply to text aswell. '-p' disables
+# preview wrapper, so that pagination will apply to text aswell. '-p' disables
 # fancy output.
 preview_text() {
 	if [ "$1" = "-p" ]; then
