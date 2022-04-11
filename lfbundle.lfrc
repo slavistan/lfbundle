@@ -42,14 +42,14 @@ cmd open_default &{{
 }}
 
 # Quit lf and change zsh's working directory.
-cmd quitcd %{{
+cmd quitcd ${{
 	echo "1" > "$LFBUNDLE_TEMPDIR/changecwd"
 	lf -remote "send $id quit"
 }}
 
 # Navigate into directory, but don't open if file. Complement to the built-in
 # updir.
-cmd downdir %{{
+cmd downdir ${{
 	[ -d "$f" ] && lf -remote "send $id open"
 }}
 
@@ -59,13 +59,13 @@ cmd downdir %{{
 #        a document preview. There's no proper mechanism to reset the page
 #        number currently. Maybe ask why lf redraws the screen after every
 #        remote command execution. This is really annoying.
-cmd incr_page %{{
+cmd incr_page ${{
 	page="$(cat $LFBUNDLE_TEMPDIR/page)"
 	echo $(( $page + 1 )) >"$LFBUNDLE_TEMPDIR/page"
 	lf -remote "send $id reload"
 }}
 
-cmd decr_page %{{
+cmd decr_page ${{
 	page="$(cat $LFBUNDLE_TEMPDIR/page)"
 	if [ $page -gt 1 ]; then
 		echo $(( $page - 1 )) >"$LFBUNDLE_TEMPDIR/page"
@@ -73,12 +73,12 @@ cmd decr_page %{{
 	fi
 }}
 
-cmd clean_preview %{{
+cmd clean_preview ${{
 	/usr/local/lib/lfbundle-cleaner
 }}
 
 # Set view mode
-cmd onecol %{{
+cmd onecol ${{
 	# HACK: Must no-op previewer or the ueberzug spawns again.
 	#       lf seems to have a bug with spurious executions of the previewer.
 	#       Running a simple :reload will run the previewer twice. Check
@@ -88,13 +88,13 @@ cmd onecol %{{
 	rm "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-cmd twocol %{{
+cmd twocol ${{
 	lf -remote "send $id :set previewer /usr/local/lib/lfbundle-previewer" # HACK: see above
 	lf -remote "send $id :set ratios 2:5; set preview; reload"
 	touch "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-cmd togglecol %{{
+cmd togglecol ${{
 	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
 		lf -remote "send $id :onecol; reload"
 	else
