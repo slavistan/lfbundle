@@ -20,7 +20,7 @@ Afterwards, checkout this repository and as a regular user execute these instruc
 ```
 # Install files
 sudo mkdir -p /usr/local/lib/
-sudo cp lfbundle-previewer lfbundle-cleaner lfbundle-opener lfbundle-extract /usr/local/lib/
+sudo cp lfbundle-previewer lfbundle-cleaner lfbundle-opener /usr/local/lib/
 mkdir -p "$XDG_CONFIG_HOME/lfbundle/"
 cp lfbundle.zshrc lfbundle.lfrc "$XDG_CONFIG_HOME/lfbundle/"
 
@@ -34,7 +34,6 @@ This will create the following files:
  /usr/local/lib
 ├─  lfbundle-previewer
 ├─  lfbundle-opener
-├─  lfbundle-extract
 └─  lfbundle-cleaner
 
  $XDG_CONFIG_HOME
@@ -45,5 +44,10 @@ This will create the following files:
 
 To **uninstall** simply remove the above files and delete the line added to your zshrc.
 
-<!-- TODO: previewer for .drawio -->
-<!-- TODO: opener for .drawio -->
+<!--
+TODO: Preview and open .drawio files
+TODO: Open selected directory in new terminal (o)
+TODO: Open current working directory in new terminal (Shift + o)
+TODO: Open GUI application and swallow window (^x + o)
+FIXME: Color of /tmp dir is blue
+-->

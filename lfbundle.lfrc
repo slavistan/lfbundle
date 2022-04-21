@@ -81,8 +81,7 @@ cmd clean_preview ${{
 cmd onecol ${{
 	# HACK: Must no-op previewer or the ueberzug spawns again.
 	#       lf seems to have a bug with spurious executions of the previewer.
-	#       Running a simple :reload will run the previewer twice. Check
-	#       if thats my blunder. TODO;
+	#       Running a simple :reload will run the previewer twice.
 	lf -remote "send $id :set previewer true"
 	lf -remote "send $id :set nopreview; set ratios 1; clean_preview; reload"
 	rm "$LFBUNDLE_TEMPDIR/togglecol"
@@ -112,31 +111,3 @@ cmd togglecol ${{
 	fi
 	
 }}
-
-cmd extract &{{
-	printf -- '%s' "$fx" | xargs -0 -n 1 -P 1 /usr/local/lib/lfbundle-extract
-	lf -remote "send $id reload"
-}}
-
-# IDEA: Use default lfrc for setup compatible with vanilla lf.
-#       Some aspects of my lf configuration are compatible with any lf setup
-#       and might be reused for systems where the complex fluff is unavailable.
-
-# Pagination and Preview
-# ======================
-#
-# IDEA: Disable pagination for short documents.
-# IDEA: Videos and gifs should automaticall show different images (youtube preview)
-# IDEA: Increase pagination by half terminal height (vim's ^d behavior)
-
-# TODO: File opening mechanisms
-#       - default external opener for every type
-#         -- same with swallow?
-#         -- default opener for multiple selected files (tabs nvim?)
-#       - default editor for selected file types
-
-# TODO: Directory actions
-#       dmenu-esque context aware choice of actions to perform within a directory.
-#       - open new termial with wd
-
-# FIXME: Color of /tmp directory is blue
