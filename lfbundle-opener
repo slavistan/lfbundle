@@ -11,7 +11,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	exit
 	;;
 *.pdf|*.ps|*.djvu|*.epub)
-	zathura "$file"
+	okular "$file"
 	exit
 	;;
 *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
@@ -32,7 +32,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	exit
 	;;
 *)
-	echo "nvim $file" | zsh-xi st
+	echo "nvim $file" | zshxi
 	exit
 	;;
 esac
