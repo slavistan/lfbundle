@@ -1,0 +1,7 @@
+# See https://github.com/gokcehan/lf/blob/master/etc/colors.example for a complete example file.
+
+ex   38;5;253
+fi   38;5;253
+di   1;38;5;253
+ln   38;5;253
+so   38;5;253
