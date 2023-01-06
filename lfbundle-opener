@@ -8,31 +8,28 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 #*.7z) 7z l "$file" ;;
 *.avi|*.mp4|*.mkv|*.webm)
 	mpv "$file"
-	exit
 	;;
-*.pdf|*.ps|*.djvu|*.epub)
+*.pdf|*.ps|*.djvu)
 	okular "$file"
-	exit
+	;;
+*.epub)
+	mupdf "$file"
 	;;
 *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
 	# FIXME: soffice crashes when launched via shell-async '&soffice'
-	soffice "$file" >/tmp/barz 2>&1
-	exit
+	soffice "$file" >/dev/null 2>&1
 	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff)
 	sxiv "$file"
-	exit
 	;;
 *.svg)
 	inkscape "$file"
-	exit
 	;;
 *.gif)
 	sxiv -a "$file"
-	exit
 	;;
 *)
 	echo "nvim $file" | zshxi
-	exit
 	;;
 esac
+
