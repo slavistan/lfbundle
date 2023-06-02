@@ -1,14 +1,9 @@
 #!/usr/bin/env zsh
 
-# Load ueberzug preview for file "$1".
 preview_image() {
-	cat <<-EOF | paste -sd '' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
-	{
-	"action": "add", "identifier": "lfbundle-preview",
-	"path": "$1", "x": "$IMAGE_PREVIEWBOX_X", "y": "$IMAGE_PREVIEWBOX_Y", "width": "$IMAGE_PREVIEWBOX_W", "height": "$IMAGE_PREVIEWBOX_H",
-	"scaler": "contain"
-	}
-	EOF
+	# chafa --animate false "$abspath"
+	# gif animations don't work in lf, prints frames below each other
+	chafa --size ${IMAGE_PREVIEWBOX_W}x${IMAGE_PREVIEWBOX_H} "$1"
 }
 
 # Preview "$1"'s file content as text using '-' for stdin. Use as common text
@@ -77,15 +72,11 @@ case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 	gm convert "$buffer" "$thumbnail_abspath"
 	preview_image "$thumbnail_abspath"
 	;;
-*.jpg|*.jpeg|*.png|*.bmp|*.tiff)
+*.jpg|*.jpeg|*.png|*.bmp|*.tiff|*.gif|*.svg)
 	preview_image "$abspath"
 	;;
 *.svg)
 	gm convert "$abspath" "$thumbnail_abspath"
-	preview_image "$thumbnail_abspath"
-	;;
-*.gif)
-	gm convert "$abspath[$page]" "$thumbnail_abspath"
 	preview_image "$thumbnail_abspath"
 	;;
 *.iso)

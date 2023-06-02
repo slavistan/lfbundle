@@ -6,7 +6,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 #*.zip) unzip -l "$file" ;;
 #*.rar) unrar l "$file" ;;
 #*.7z) 7z l "$file" ;;
-*.avi|*.mp4|*.mkv|*.webm)
+*.avi|*.mp4|*.mkv|*.webm|*.mp3)
 	mpv "$file"
 	;;
 *.pdf|*.ps|*.djvu)
