@@ -9,22 +9,20 @@ set icons
 set truncatechar '⋯'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
 set cleaner /usr/local/lib/lfbundle-cleaner
-set timefmt " 2006-01-02  15:04:05.000000000-0700"
+set timefmt "2006-01-02T15:04:05.000000000-0700"
 set period 1 # check directory timestamps every second
 set shell zsh
 set filesep '\0' # use nul-separation for multiple selections
 
 map d # unmap scary delete hotkey
 map i
-map o open_default
+map o open_detached
 map <space> toggle
-map <esc> quit
-map q quitcd # quit with
+map q quitcd # quit and change the working directory
+map <esc> quit # quit without changing the working directory
 map j down
 map k up
 map l downdir
-map <gt> incr_page
-map <lt> decr_page
 map t togglecol
 
 cmd chmod ${{
@@ -33,67 +31,47 @@ cmd chmod ${{
 }}
 
 # Default opener for every filetype.
-# NOTE: lf spawns subprocesses within its own process group. This causes
-#       subprocesses to share signals, even if they are detached (&foo &). To
-#       avoid this problem, we explicitly wrap the call with setsid. Come back
-#       once lf has this covered. See https://github.com/gokcehan/lf/issues/694
-cmd open_default &{{
-	setsid --fork /usr/local/lib/lfbundle-opener "$f"
+cmd open_detached &{{
+	/usr/local/lib/lfbundle-opener "$f"
 }}
 
 # Quit lf and change zsh's working directory.
-cmd quitcd ${{
+cmd quitcd %{{
 	echo "1" > "$LFBUNDLE_TEMPDIR/changecwd"
 	lf -remote "send $id quit"
 }}
 
 # Navigate into directory, but don't open if file. Complement to the built-in
 # updir.
-cmd downdir ${{
-	[ -d "$f" ] && lf -remote "send $id open"
-}}
-
-# Pagination
-# FIXME: Pagination does not reset page number.
-#        which causes previews to break if an out-of-bounds index is applied to
-#        a document preview. There's no proper mechanism to reset the page
-#        number currently. Maybe ask why lf redraws the screen after every
-#        remote command execution. This is really annoying.
-cmd incr_page ${{
-	page="$(cat $LFBUNDLE_TEMPDIR/page)"
-	echo $(( $page + 1 )) >"$LFBUNDLE_TEMPDIR/page"
-	lf -remote "send $id reload"
-}}
-
-cmd decr_page ${{
-	page="$(cat $LFBUNDLE_TEMPDIR/page)"
-	if [ $page -gt 1 ]; then
-		echo $(( $page - 1 )) >"$LFBUNDLE_TEMPDIR/page"
-		lf -remote "send $id reload"
+cmd downdir %{{
+	if [ -d "$f" ]; then
+		lf -remote "send $id open"
 	fi
 }}
 
-cmd clean_preview ${{
+cmd clean_preview %{{
 	/usr/local/lib/lfbundle-cleaner
 }}
 
 # Set view mode
-cmd onecol ${{
+cmd onecol %{{
 	# HACK: Must no-op previewer or the ueberzug spawns again.
 	#       lf seems to have a bug with spurious executions of the previewer.
 	#       Running a simple :reload will run the previewer twice.
-	lf -remote "send $id :set previewer true"
-	lf -remote "send $id :set nopreview; set ratios 1; clean_preview; reload"
+	# lf -remote "send $id :set previewer true"
+	# lf -remote "send $id :set nopreview; set ratios 1; clean_preview; reload"
+	lf -remote "send $id :set nopreview; set ratios 1;"
 	rm "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-cmd twocol ${{
-	lf -remote "send $id :set previewer /usr/local/lib/lfbundle-previewer" # HACK: see above
-	lf -remote "send $id :set ratios 2:5; set preview; reload"
+cmd twocol %{{
+	# lf -remote "send $id :set previewer /usr/local/lib/lfbundle-previewer" # HACK: see above
+	# lf -remote "send $id :set ratios 2:5; set preview; reload"
+	lf -remote "send $id :set ratios 2:5; set preview"
 	touch "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-cmd togglecol ${{
+cmd togglecol %{{
 	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
 		lf -remote "send $id :onecol; reload"
 	else

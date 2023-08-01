@@ -1,9 +1,8 @@
 #!/usr/bin/env zsh
 
 preview_image() {
-	# chafa --animate false "$abspath"
-	# gif animations don't work in lf, prints frames below each other
-	chafa --size ${IMAGE_PREVIEWBOX_W}x${IMAGE_PREVIEWBOX_H} "$1"
+	# gif animations of chafa don't work in lf, prints frames below each other
+	chafa --animate false --size ${IMAGE_PREVIEWBOX_W}x${IMAGE_PREVIEWBOX_H} "$1"
 }
 
 # Preview "$1"'s file content as text using '-' for stdin. Use as common text
