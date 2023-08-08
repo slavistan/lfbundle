@@ -20,7 +20,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	soffice "$file" >/dev/null 2>&1
 	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff)
-	sxiv "$file"
+	nsxiv "$file"
 	;;
 *.svg)
 	inkscape "$file"
