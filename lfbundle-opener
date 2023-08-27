@@ -15,6 +15,9 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	# FIXME: soffice crashes when launched via shell-async '&soffice'
 	soffice "$file" >/dev/null 2>&1
 	;;
+*.drawio.png)
+	drawio "$file"
+	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff)
 	nsxiv "$file"
 	;;
@@ -22,7 +25,7 @@ case "$(basename "$file" | tr '[:upper:]' '[:lower:]')" in
 	inkscape "$file"
 	;;
 *.gif)
-	sxiv -a "$file"
+	nsxiv -a "$file"
 	;;
 *.html)
 	surf "$file"
