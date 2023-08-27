@@ -17,6 +17,7 @@ set filesep '\0' # use nul-separation for multiple selections
 map d # unmap scary delete hotkey
 map i
 map o open_detached
+map O open_detached_swallow
 map <space> toggle
 map q quitcd # quit and change the working directory
 map <esc> quit # quit without changing the working directory
@@ -32,6 +33,11 @@ cmd chmod ${{
 
 # Default opener for every filetype.
 cmd open_detached &{{
+	/usr/local/lib/lfbundle-opener "$f"
+}}
+
+cmd open_detached_swallow &{{
+	dwmswallow $WINDOWID
 	/usr/local/lib/lfbundle-opener "$f"
 }}
 
