@@ -1,11 +1,15 @@
 # This file shall be sourced by zsh and provides the enviroment and setup
 # required to extend lf's functionality.
 
+# echo lol> /tmp/lf-foobar
+
+LF_CONFIG_HOME="${0:A:h}"
+
 lfbundle() {
 	# Initialize tempdir.
 	local basedir="$XDG_RUNTIME_DIR/lfbundle"
 	mkdir -p "$basedir"
-	LFBUNDLE_TEMPDIR="$(mktemp -d -p "$basedir" lfbundle-XXXXXX)"
+	LFBUNDLE_TEMPDIR="$(mktemp -d -p "$basedir" lfbundle-$(date -Ins)-XXXXXX)"
 
 	# Arm cleanup trap.
 	lfbundle_cleanup() {
@@ -20,9 +24,10 @@ lfbundle() {
 	trap 'lfbundle_cleanup' INT QUIT HUP
 
 	# Run lf.
-	LFBUNDLE_TEMPDIR="$LFBUNDLE_TEMPDIR" \lf \
-		-last-dir-path "$LFBUNDLE_TEMPDIR/lastdir" \
-		-config "$XDG_CONFIG_HOME/lfbundle/lfbundle.lfrc" \
+	LFBUNDLE_TEMPDIR="$LFBUNDLE_TEMPDIR"                  \
+		LF_CONFIG_HOME="$LF_CONFIG_HOME"                  \
+		\lf                                               \
+		-last-dir-path "$LFBUNDLE_TEMPDIR/lastdir"        \
 		"$@"
 
 	# Change working directory after closing lf.

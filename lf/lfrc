@@ -1,0 +1,92 @@
+# lfrc to be used in conjunction with the scaffolding setup. This configuration
+# is incompatible with vanilla lf and requires a specific environment.
+
+set hidden
+set ratios 2:5
+set nodrawbox
+set scrolloff 3
+set icons
+set truncatechar '⋯'
+set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
+set cleaner /usr/local/lib/lfbundle-cleaner
+set timefmt "2006-01-02T15:04:05.000000000-0700"
+set period 1 # check directory timestamps every second
+set shell zsh
+set filesep '\0' # use nul-separation for multiple selections
+
+map d # unmap scary delete hotkey
+map i
+map o open_detached
+map O open_detached_swallow
+map <space> toggle
+map q quitcd # quit and change the working directory
+map <esc> quit # quit without changing the working directory
+map j down
+map k up
+map l downdir
+map t togglecol
+
+cmd chmod ${{
+	chmod "$@" "${(s/\0/)fx}" &&
+		lf -remote "send $id :reload"
+}}
+
+# Default opener for every filetype.
+cmd open_detached &{{
+	/usr/local/lib/lfbundle-opener "$f"
+}}
+
+cmd open_detached_swallow &{{
+	dwmswallow $WINDOWID
+	/usr/local/lib/lfbundle-opener "$f"
+}}
+
+# Quit lf and change zsh's working directory.
+cmd quitcd %{{
+	touch "$LFBUNDLE_TEMPDIR/changecwd"
+	lf -remote "send $id quit"
+}}
+
+# Navigate into directory, but don't open if file. Complement to the built-in
+# updir.
+cmd downdir %{{
+	if [ -d "$f" ]; then
+		lf -remote "send $id open"
+	fi
+}}
+
+cmd clean_preview %{{
+	/usr/local/lib/lfbundle-cleaner
+}}
+
+# Set view mode
+cmd onecol %{{
+	lf -remote "send $id :set nopreview; set ratios 1;"
+    if [[ -f "$LFBUNDLE_TEMPDIR/togglecol" ]]; then
+        rm "$LFBUNDLE_TEMPDIR/togglecol"
+    fi
+}}
+
+cmd twocol %{{
+	lf -remote "send $id :set ratios 2:5; set preview"
+	touch "$LFBUNDLE_TEMPDIR/togglecol"
+}}
+
+cmd togglecol %{{
+	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
+		lf -remote "send $id :onecol; reload"
+	else
+		lf -remote "send $id :twocol"
+	fi
+}}
+
+
+${{
+	w=$(tput cols)
+	if [ $w -le 92 ]; then
+		lf -remote "send $id :onecol"
+	else
+		lf -remote "send $id :twocol"
+	fi
+
+}}

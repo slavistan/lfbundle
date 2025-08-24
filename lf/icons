@@ -1,0 +1,65 @@
+# vim:ft=conf
+
+# ln             # LINK
+# or             # ORPHAN
+# tw      t       # STICKY_OTHER_WRITABLE
+# ow             # OTHER_WRITABLE
+# st      t       # STICKY
+# di             # DIR
+# pi      p       # FIFO
+# so      s       # SOCK
+# bd      b       # BLK
+# cd      c       # CHR
+# su      u       # SETUID
+# sg      g       # SETGID
+# ex             # EXEC
+# fi             # FILE
+
+*.tar.bs2   
+*.tar   
+*.tar.gz   
+*.tgz   
+*.arc   
+*.arj   
+*.taz   
+*.lha   
+*.lz4   
+*.lzh   
+*.lzma  
+*.tlz   
+*.txz   
+*.tzo   
+*.t7z   
+*.zip   
+*.z     
+*.dz    
+*.gz    
+*.lrz   
+*.lz    
+*.lzo   
+*.xz    
+*.zst   
+*.tzst  
+*.bz2   
+*.bz    
+*.tbz   
+*.tbz2  
+*.tz    
+*.deb   
+*.rpm   
+*.jar   
+*.war   
+*.ear   
+*.sar   
+*.rar   
+*.alz   
+*.ace   
+*.zoo   
+*.cpio  
+*.7z    
+*.rz    
+*.cab   
+*.wim   
+*.swm   
+*.dwm   
+*.esd   
