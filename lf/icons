@@ -1,4 +1,10 @@
-# vim:ft=conf
+ln target
+ex "🗎*" 00
+st "📂" 00
+tw "📂" 00
+ow "📂" 00
+di "📂" 00
+fi "🗎 "
 
 # ln             # LINK
 # or             # ORPHAN
@@ -15,51 +21,51 @@
 # ex             # EXEC
 # fi             # FILE
 
-*.tar.bs2   
-*.tar   
-*.tar.gz   
-*.tgz   
-*.arc   
-*.arj   
-*.taz   
-*.lha   
-*.lz4   
-*.lzh   
-*.lzma  
-*.tlz   
-*.txz   
-*.tzo   
-*.t7z   
-*.zip   
-*.z     
-*.dz    
-*.gz    
-*.lrz   
-*.lz    
-*.lzo   
-*.xz    
-*.zst   
-*.tzst  
-*.bz2   
-*.bz    
-*.tbz   
-*.tbz2  
-*.tz    
-*.deb   
-*.rpm   
-*.jar   
-*.war   
-*.ear   
-*.sar   
-*.rar   
-*.alz   
-*.ace   
-*.zoo   
-*.cpio  
-*.7z    
-*.rz    
-*.cab   
-*.wim   
-*.swm   
-*.dwm   
-*.esd   
+*.bs2             "🗃 "
+*.tar             "🗃 "
+*.gz              "🗃 "
+*.tgz             "🗃 "
+*.arc             "🗃 "
+*.arj             "🗃 "
+*.taz             "🗃 "
+*.lha             "🗃 "
+*.lz4             "🗃 "
+*.lzh             "🗃 "
+*.lzma            "🗃 "
+*.tlz             "🗃 "
+*.txz             "🗃 "
+*.tzo             "🗃 "
+*.t7z             "🗃 "
+*.zip             "🗃 "
+*.z               "🗃 "
+*.dz              "🗃 "
+*.gz              "🗃 "
+*.lrz             "🗃 "
+*.lz              "🗃 "
+*.lzo             "🗃 "
+*.xz              "🗃 "
+*.zst             "🗃 "
+*.tzst            "🗃 "
+*.bz2             "🗃 "
+*.bz              "🗃 "
+*.tbz             "🗃 "
+*.tbz2            "🗃 "
+*.tz              "🗃 "
+*.deb             "🗃 "
+*.rpm             "🗃 "
+*.jar             "🗃 "
+*.war             "🗃 "
+*.ear             "🗃 "
+*.sar             "🗃 "
+*.rar             "🗃 "
+*.alz             "🗃 "
+*.ace             "🗃 "
+*.zoo             "🗃 "
+*.cpio            "🗃 "
+*.7z              "🗃 "
+*.rz              "🗃 "
+*.cab             "🗃 "
+*.wim             "🗃 "
+*.swm             "🗃 "
+*.dwm             "🗃 "
+*.esd             "🗃 "

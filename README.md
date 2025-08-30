@@ -1,48 +1,11 @@
 
 # Installation
 
-Install the following dependencies:
+TODO
 
-- lf
-- zsh
-- ueberzug
-- mpv
-- bat
-- sxiv
-- inkscape
-- libreoffice
-- GraphicsMagick
-- Ghostscript
-- ffmpeg
+## Directory Tree
 
-Afterwards, checkout this repository and as a regular user execute these instructions:
-
-```
-# Install files
-sudo mkdir -p /usr/local/lib/
-sudo cp lfbundle-previewer lfbundle-cleaner lfbundle-opener /usr/local/lib/
-mkdir -p "$XDG_CONFIG_HOME/lfbundle/"
-cp lfbundle.zshrc lfbundle.lfrc "$XDG_CONFIG_HOME/lfbundle/"
-
-# Source zsh configuration
-echo "source ${XDG_CONFIG_HOME}/lfbundle/lfbundle.zshrc" >>${ZDOTDIR:-$HOME}/.zshrc
-```
-
-This will create the following files:
-
-```
- /usr/local/lib
-├─  lfbundle-previewer
-├─  lfbundle-opener
-└─  lfbundle-cleaner
-
- $XDG_CONFIG_HOME
-└─  lfbundle
-   ├─  lfbundle.zshrc
-   └─  lfbundle.lfrc
-```
-
-To **uninstall** simply remove the above files and delete the line added to your zshrc.
+TODO
 
 <!--
 TODO: Preview and open .drawio files

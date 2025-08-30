@@ -81,6 +81,9 @@ case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 *.iso)
 	iso-info --no-header "$abspath" | tail -n +2 | preview_text -p -
 	;;
+*.json)
+	jq '.' "$abspath"
+	;;
 *) preview_text "$abspath"
 	;;
 esac

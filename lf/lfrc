@@ -44,7 +44,7 @@ cmd open_detached_swallow &{{
 # Quit lf and change zsh's working directory.
 cmd quitcd %{{
 	touch "$LFBUNDLE_TEMPDIR/changecwd"
-	lf -remote "send $id quit"
+	lf -remote "send $id :quit"
 }}
 
 # Navigate into directory, but don't open if file. Complement to the built-in
@@ -61,32 +61,33 @@ cmd clean_preview %{{
 
 # Set view mode
 cmd onecol %{{
-	lf -remote "send $id :set nopreview; set ratios 1;"
-    if [[ -f "$LFBUNDLE_TEMPDIR/togglecol" ]]; then
-        rm "$LFBUNDLE_TEMPDIR/togglecol"
-    fi
+	lf -remote "send $id :set nopreview; :set ratios 1;"
+    # if [[ -f "$LFBUNDLE_TEMPDIR/togglecol" ]]; then
+    #     rm "$LFBUNDLE_TEMPDIR/togglecol"
+    # fi
 }}
 
 cmd twocol %{{
-	lf -remote "send $id :set ratios 2:5; set preview"
-	touch "$LFBUNDLE_TEMPDIR/togglecol"
+	lf -remote "send $id :set ratios 2:5; :set preview"
+	# touch "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-cmd togglecol %{{
-	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
-		lf -remote "send $id :onecol; reload"
-	else
-		lf -remote "send $id :twocol"
-	fi
-}}
+# cmd togglecol %{{
+# 	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
+# 		lf -remote "send $id :onecol; reload"
+# 	else
+# 		lf -remote "send $id :twocol"
+# 	fi
+# }}
 
 
-${{
-	w=$(tput cols)
-	if [ $w -le 92 ]; then
-		lf -remote "send $id :onecol"
-	else
-		lf -remote "send $id :twocol"
-	fi
+# ${{
+# 	w=$(tput cols)
+#     echo "id = '$id'"
+# 	if [ $w -le 92 ]; then
+# 		lf -remote "send $id :onecol"
+# 	else
+# 		lf -remote "send $id :twocol"
+# 	fi
 
-}}
+# }}

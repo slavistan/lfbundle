@@ -1,12 +1,11 @@
 # This file shall be sourced by zsh and provides the enviroment and setup
 # required to extend lf's functionality.
 
-# echo lol> /tmp/lf-foobar
-
+# LF_CONFIG_HOME can be used to override the default config directory
+# where lf expects the 'lf' subdirectory.
 LF_CONFIG_HOME="${0:A:h}"
 
 lfbundle() {
-	# Initialize tempdir.
 	local basedir="$XDG_RUNTIME_DIR/lfbundle"
 	mkdir -p "$basedir"
 	LFBUNDLE_TEMPDIR="$(mktemp -d -p "$basedir" lfbundle-$(date -Ins)-XXXXXX)"
@@ -20,7 +19,7 @@ lfbundle() {
 	setopt localoptions
 	setopt localtraps
 
-	# FIXME: Trap doesn't trigger if terminal is killed
+	# FIXME: Trap doesn't trigger if st terminal is killed
 	trap 'lfbundle_cleanup' INT QUIT HUP
 
 	# Run lf.

@@ -1,3 +1,1 @@
 #!/usr/bin/env sh
-
-echo '{ "action": "remove", "identifier": "lfbundle-preview" }' >"$LFBUNDLE_TEMPDIR/ueberzug_fifo"
