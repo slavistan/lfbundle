@@ -22,11 +22,10 @@ lfbundle() {
 	# FIXME: Trap doesn't trigger if st terminal is killed
 	trap 'lfbundle_cleanup' INT QUIT HUP
 
-	# Run lf.
-	LFBUNDLE_TEMPDIR="$LFBUNDLE_TEMPDIR"                  \
-		LF_CONFIG_HOME="$LF_CONFIG_HOME"                  \
-		\lf                                               \
-		-last-dir-path "$LFBUNDLE_TEMPDIR/lastdir"        \
+	LFBUNDLE_TEMPDIR="$LFBUNDLE_TEMPDIR"           \
+		LF_CONFIG_HOME="$LF_CONFIG_HOME"           \
+		\lf                                        \
+		-last-dir-path "$LFBUNDLE_TEMPDIR/lastdir" \
 		"$@"
 
 	# Change working directory after closing lf.

@@ -1,6 +1,7 @@
 # lfrc to be used in conjunction with the scaffolding setup. This configuration
 # is incompatible with vanilla lf and requires a specific environment.
 
+set preview
 set hidden
 set ratios 2:5
 set nodrawbox
@@ -8,6 +9,9 @@ set scrolloff 3
 set icons
 set truncatechar '⋯'
 set promptfmt "\033[1;38;5;138m[ lf ] \033[38;5;159m%u@%h\033[38;5;253m:\033[38;5;149m%w/\033[0m"
+# set previewer "$LF_CONFIG_HOME/lfbundle-previewer"
+
+# set previewer /home/stan/prj/lfbundle/lfbundle-previewer
 set cleaner /usr/local/lib/lfbundle-cleaner
 set timefmt "2006-01-02T15:04:05.000000000-0700"
 set period 1 # check directory timestamps every second
@@ -55,31 +59,18 @@ cmd downdir %{{
 	fi
 }}
 
-cmd clean_preview %{{
-	/usr/local/lib/lfbundle-cleaner
-}}
-
 # Set view mode
 cmd onecol %{{
 	lf -remote "send $id :set nopreview; :set ratios 1;"
-    # if [[ -f "$LFBUNDLE_TEMPDIR/togglecol" ]]; then
-    #     rm "$LFBUNDLE_TEMPDIR/togglecol"
-    # fi
 }}
 
 cmd twocol %{{
 	lf -remote "send $id :set ratios 2:5; :set preview"
-	# touch "$LFBUNDLE_TEMPDIR/togglecol"
 }}
 
-# cmd togglecol %{{
-# 	if [ -e "$LFBUNDLE_TEMPDIR/togglecol" ]; then
-# 		lf -remote "send $id :onecol; reload"
-# 	else
-# 		lf -remote "send $id :twocol"
-# 	fi
-# }}
-
+cmd on-init ${{
+    lf -remote "send $id :set previewer \"$LF_CONFIG_HOME/lfbundle-previewer\""
+}}
 
 # ${{
 # 	w=$(tput cols)
