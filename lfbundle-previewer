@@ -1,13 +1,34 @@
 #!/usr/bin/env bash
 
-echo "preview; '$@'" >> /tmp/shieeet
-
 abspath="$1"; lf_previewbox_x="$4"; lf_previewbox_y="$5"; lf_previewbox_w="$2"; lf_previewbox_h="$3"
 
 preview_image() {
     filepath="$1"
 
-	chafa --animate false "$filepath"
+	chafa --animate false --view-size "${lf_previewbox_w}x${lf_previewbox_h}" "$filepath"
+}
+
+preview_archive() {
+    filepath="$1"
+
+    case "$1" in
+    *.tar|*.tar.*)
+        tar -tf "$filepath"
+        ;;
+    *.zip)
+        zipinfo -1 "$filepath"
+        ;;
+    *.7z)
+        # https://stackoverflow.com/a/68070379
+        7z l -ba "$filepath" | grep -oP '(?<=^.{53}).*'
+        ;;
+    *.rar)
+        rar lb "$filepath"
+        ;;
+    *)
+        echo "unknown archive format"
+        ;;
+    esac | tree -L 1 -F --dirsfirst --noreport --fromfile .
 }
 
 # # Preview "$1"'s file content as text using '-' for stdin. Use as common text
@@ -53,21 +74,30 @@ filename="$(basename "$abspath")"
 # fi
 # printf '─%.0s' $(seq 1 $w_sepline); echo
 
+
+THUMBNAIL_ABSPATH="$LFBUNDLE_TEMPDIR/thumbnail.png" # thumbnail path for ad-hoc conversions
+
 case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
+*.pdf|*.ps)
+	gs -o "$THUMBNAIL_ABSPATH" -sDEVICE=pngalpha "$filename" >/dev/null
+	preview_image "$THUMBNAIL_ABSPATH"
+	;;
 *.jpg|*.jpeg|*.png|*.bmp|*.tiff|*.gif|*.svg)
 	preview_image "$abspath"
 	;;
+*.avi|*.webm|*.webp|*.mp4|*.mkv)
+	ffmpeg -y -i "$abspath" -vframes 1 "$THUMBNAIL_ABSPATH"
+	preview_image "$THUMBNAIL_ABSPATH"
+    ;;
+*.tar|*.tar.*|*.7z|*.rar|*.zip)
+    preview_archive "$abspath"
+    ;;
 esac
-# *.tar*) tar tf "$abspath" | preview_text -p - ;;
-# *.zip) unzip -l "$abspath" | preview_text -p - ;;
-# *.rar) unrar l "$abspath" | preview_text -p - ;;
-# *.7z) 7z l "$abspath" | sed -n -e '/^----------/,$p' | tail +2 | head -n-2 | rev | cut -d' ' -f1 | rev | preview_text -p - ;;
+
+# TODO: Generic error handler (probably using a bashism/hook)
+
 # *.avi|*.mp4|*.mkv|*.webm)
 # 	ffmpeg -y -i "$abspath" -vframes 1 "$thumbnail_abspath"
-# 	preview_image "$thumbnail_abspath"
-# 	;;
-# *.pdf|*.ps)
-# 	gs -o "$thumbnail_abspath" -sDEVICE=pngalpha -dFirstPage="$page" -dLastPage="$page" "$abspath" >/dev/null
 # 	preview_image "$thumbnail_abspath"
 # 	;;
 # *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
