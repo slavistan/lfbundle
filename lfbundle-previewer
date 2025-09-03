@@ -26,7 +26,7 @@ preview_archive() {
         rar lb "$filepath"
         ;;
     *)
-        echo "unknown archive format"
+        return 1
         ;;
     esac | tree -L 1 -F --dirsfirst --noreport --fromfile .
 }
@@ -92,6 +92,9 @@ case "$(echo "$filename" | tr '[:upper:]' '[:lower:]')" in
 *.tar|*.tar.*|*.7z|*.rar|*.zip)
     preview_archive "$abspath"
     ;;
+*.json|*.md)
+	bat --style plain --color always "$abspath"
+	;;
 esac
 
 # TODO: Generic error handler (probably using a bashism/hook)
