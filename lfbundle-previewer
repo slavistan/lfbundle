@@ -6,6 +6,9 @@ lf_previewbox_y="$5"
 lf_previewbox_w="$2"
 lf_previewbox_h="$3"
 
+# HACK:Previewbox parameter width seems off by 2, dunno why
+lf_previewbox_w=$(( $lf_previewbox_w - 2 ))
+
 preview_image() {
 	filepath="$1"
 
@@ -18,23 +21,22 @@ preview_archive() (
 	filepath="$1"
 
 	case "$1" in
-	*.tar|*.tar.*)
-		tar -tf "$filepath"
+		*.tar|*.tar.*)
+			tar -tf "$filepath"
 		;;
-	*.zip)
-		zipinfo -1 "$filepath"
+		*.zip)
+			zipinfo -1 "$filepath"
 		;;
-	*.7z)
-		# https://stackoverflow.com/a/68070379
-		7z l -ba "$filepath" | grep -oP '(?<=^.{53}).*'
+		*.7z)
+			# https://stackoverflow.com/a/68070379
+			7z l -ba "$filepath" | grep -oP '(?<=^.{53}).*'
 		;;
-	*.rar)
-		rar lb "$filepath"
+		*.rar)
+			rar lb "$filepath"
 		;;
-	*)
-		return 1
-		;;
-	esac | tree -L 1 -F --dirsfirst --noreport --fromfile .
+	esac                                                 | \
+		tree -L 1 -F --dirsfirst --noreport --fromfile . | \
+		fold -w "$lf_previewbox_w"
 )
 
 # # Preview "$1"'s file content as text using '-' for stdin. Use as common text
@@ -63,12 +65,9 @@ preview_archive() (
 
 THUMBNAIL_ABSPATH="$LFBUNDLE_TEMPDIR/thumbnail.png" # thumbnail path for ad-hoc conversions
 
-# TODO: line wrapping
-#       lf doesn't automatically wrap the output inside the viewbox.
+# Generates file previews. Returns nonzero return code if an error occurs.
 generate_preview() (
-	ERROR_PREVIEW=1
-	ERROR_NO_PREVIEWER_CONFIGURED_FOR_FILE=2
-	trap "exit $ERROR_PREVIEW" ERR
+	trap "exit 1" ERR
 	set -eo pipefail
 	filepath="$1"
 
@@ -88,41 +87,27 @@ generate_preview() (
 	*.tar|*.tar.*|*.7z|*.rar|*.zip)
 		preview_archive "$filepath"
 		;;
-	# *.iso)
-	# 	iso-info --no-header "$filepath"
-	# 	;;
+	*.iso)
+		iso-info --no-header "$filepath" | \
+			fold -w "$lf_previewbox_w"
+		;;
 	*.drawio)
-		echo TODO
+		drawio -x -f png -o "$THUMBNAIL_ABSPATH" "$filepath" >/dev/null 2>&1
+		preview_image "$THUMBNAIL_ABSPATH"
 		;;
 	*)
-		if file -b --mime-type "$filepath" | grep -q '^application\/'; then
-			return "$ERROR_NO_PREVIEWER_CONFIGURED_FOR_FILE"
-		else
-			bat --style plain --color always "$filepath"
-		fi
+		bat --style plain --color always --terminal-width "$lf_previewbox_w" "$filepath"
 		;;
 	esac
 )
 
 preview="$(generate_preview "$FILEPATH_ABS")"
-case "$?" in
-0)
+if [[ "$?" == 0 ]]; then
 	echo "$preview"
-	;;
-1)
+else
 	echo "Error generating preview, using 'file':"
-	file "$FILEPATH_ABS"
-	;;
-2)
-	echo "No previewer configured for file, using 'file':"
-	file "$FILEPATH_ABS"
-	;;
-esac
-# if [[ "$?" == 0 ]]; then
-# 	echo "$preview"
-# else
-# 	echo "Error generating preview :("
-# fi
+	file "$FILEPATH_ABS" | fold -w "$lf_previewbox_w"
+fi
 
 # *.odt|*.ods|*.odp|*.odg|*.odf|*.odb|*.doc|*.docx)
 # 	echo
